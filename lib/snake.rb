@@ -55,19 +55,19 @@ class Snake
       go_left
       avoid_obstacles(obstacles, @direction)
     elsif target_x < @x && 1200 - @x + target_x < @x - target_x
-      go_down if @direction == "right"
+      go_up if @direction == "left"
       go_right
       avoid_obstacles(obstacles, @direction)
     elsif target_x > @x && @x + 1200 - target_x >= target_x - @x
-      go_down if @direction == "left"
+      go_up if @direction == "left"
       go_right
       avoid_obstacles(obstacles, @direction)
     elsif target_x > @x && @x + 1200 - target_x < target_x - @x
-      go_down if @direction == "left"
+      go_down if @direction == "right"
       go_left
       avoid_obstacles(obstacles, @direction)
     elsif target_y < @y && 800 - @y + target_y <= @y - target_y
-      go_right if @direction == "down"
+      go_left if @direction == "up"
       go_down
       avoid_obstacles(obstacles, @direction)
     elsif target_y < @y && @y && 800 - @y + target_y > @y - target_y
@@ -75,11 +75,11 @@ class Snake
       go_up
       avoid_obstacles(obstacles, @direction)
     elsif target_y > @y && 800 - target_y + @y <= target_y - @y
-      go_right if @direction == "up"
+      go_right if @direction == "down"
       go_up
       avoid_obstacles(obstacles, @direction)
     elsif target_y > @y && 800 - target_y + @y > target_y - @y
-      go_right if @direction == "up"
+      go_left if @direction == "up"
       go_down
       avoid_obstacles(obstacles, @direction)
     end
@@ -89,9 +89,9 @@ class Snake
     if direction == "right"
       go_up if obstacles.all.any? { |obstacle| obstacle.x == @x + SIZE && obstacle.y == @y }
     elsif direction == "left"
-      go_up if obstacles.all.any? { |obstacle| obstacle.x == @x - SIZE && obstacle.y == @y }
+      go_down if obstacles.all.any? { |obstacle| obstacle.x == @x - SIZE && obstacle.y == @y }
     elsif direction == "down"
-      go_left if obstacles.all.any? { |obstacle| obstacle.y == @y + SIZE && obstacle.x == @x }
+      go_right if obstacles.all.any? { |obstacle| obstacle.y == @y + SIZE && obstacle.x == @x }
     elsif direction == "up"
       go_left if obstacles.all.any? { |obstacle| obstacle.y == @y - SIZE && obstacle.x == @x }
     end

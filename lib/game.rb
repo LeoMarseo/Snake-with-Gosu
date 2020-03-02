@@ -37,6 +37,7 @@ class Game < Gosu::Window
     @bad_eat_sound = Gosu::Sample.new("media/punch.wav")
     @bad_reset_sound = Gosu::Sample.new("media/negative_beep.mp3")
     @background_image = Gosu::Image.new("media/snake-bg.jpg")
+    @starting_phrase = "START"
     reset_game
   end
 
@@ -45,6 +46,9 @@ class Game < Gosu::Window
     set_snake_direction
     @bad_snake.target(@food.x, @food.y, @obstacles)
     @bad_snake.avoid_tails(@snake.tails)
+    sleep(1) if @starter
+    @starter = false
+    @starting_phrase = ""
 
     # out_of_bound? || ## uncomment this and add to the condition below to implement borders
     if obstacle_collision?(@snake) || self_collision?(@snake) || snake_collision_with_other_snake?(@bad_snake, @snake)
@@ -58,6 +62,7 @@ class Game < Gosu::Window
       @eat_sound.play
       reset_food
       calculate_score(@snake)
+      @snake.grow
       increase_difficulty
     end
 
@@ -66,7 +71,7 @@ class Game < Gosu::Window
       reset_food
       calculate_score(@bad_snake)
       @bad_snake.grow
-      @obstacles.add_obstacle
+      increase_difficulty
     end
 
     @last_move = Time.now
@@ -78,6 +83,7 @@ class Game < Gosu::Window
     @bad_snake.draw
     @food.draw
     @obstacles.draw
+    @font.draw_markup("#{@starting_phrase}", 410, 300, 0, 4.0, 4.0, SCORE[:color])
     @font.draw_markup("Player Score: #{@snake.score}", SCORE[:x], SCORE[:y], SCORE[:z], SCORE[:scale], SCORE[:scale], SCORE[:color])
     @font.draw_markup("Enemy Score: #{@bad_snake.score}", EN_SCORE[:x], EN_SCORE[:y], EN_SCORE[:z], EN_SCORE[:scale], EN_SCORE[:scale], EN_SCORE[:color])
   end
@@ -88,7 +94,6 @@ class Game < Gosu::Window
 
   def increase_difficulty
     @speed -= SPEED_INCREMENT
-    @snake.grow
     @obstacles.add_obstacle
   end
 
@@ -147,6 +152,7 @@ class Game < Gosu::Window
     reset_snake
     reset_bad_snake
     reset_food
+    @starter = true
   end
 end
 
