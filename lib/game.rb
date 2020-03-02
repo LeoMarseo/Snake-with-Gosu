@@ -48,9 +48,9 @@ class Game < Gosu::Window
 
     # out_of_bound? || ## uncomment this and add to the condition below to implement borders
     if obstacle_collision?(@snake) || self_collision?(@snake) || snake_collision_with_other_snake?(@bad_snake, @snake)
-      reset_game && sleep(0.5)
+      reset_game
     elsif obstacle_collision?(@bad_snake) || snake_collision_with_other_snake?(@snake, @bad_snake)
-      reset_bad_snake && @bad_reset_sound.play && sleep(0.5)
+      reset_bad_snake && @bad_reset_sound.play && sleep(1)
     end
       @snake.move && @bad_snake.move
 
@@ -147,7 +147,6 @@ class Game < Gosu::Window
     reset_snake
     reset_bad_snake
     reset_food
-    @counter = 0
   end
 end
 
