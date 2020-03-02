@@ -16,6 +16,18 @@ class Food
     Gosu.draw_rect(@x, @y, @size, @size, @color)
   end
 
+  def wrong_location?(obstacles, snake_one, snake_two)
+    if obstacles.all.any? { |obstacle| obstacle.x == @x && obstacle.y == @y }
+      true
+    elsif snake_one.tails.any? { |tail| tail[0] == @x && tail[1] == @y }
+      true
+    elsif snake_two.tails.any? { |tail| tail[0] == @x && tail[1] == @y }
+      true
+    else
+      false
+    end
+  end
+
   private
 
   def random_location_in(range)

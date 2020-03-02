@@ -15,7 +15,7 @@ class Game < Gosu::Window
     y: 10,
     z: 1.0,
     scale: 1.0,
-    color: Gosu::Color.rgb(66, 168, 171)
+    color: Gosu::Color.rgb(100, 269, 260)
   }.freeze
   EN_SCORE = {
     size: GRID[:cell_size] + 10,
@@ -43,13 +43,14 @@ class Game < Gosu::Window
   def update
     return if (Time.now - @last_move) < @speed
     set_snake_direction
-    @bad_snake.target(@food.x, @food.y)
+    @bad_snake.target(@food.x, @food.y, @obstacles)
+    @bad_snake.avoid_tails(@snake.tails)
 
     # out_of_bound? || ## uncomment this and add to the condition below to implement borders
     if obstacle_collision?(@snake) || self_collision?(@snake) || snake_collision_with_other_snake?(@bad_snake, @snake)
-      reset_game
+      reset_game && sleep(0.5)
     elsif obstacle_collision?(@bad_snake) || snake_collision_with_other_snake?(@snake, @bad_snake)
-      reset_bad_snake && @bad_reset_sound.play && sleep(0.05)
+      reset_bad_snake && @bad_reset_sound.play && sleep(0.5)
     end
       @snake.move && @bad_snake.move
 
@@ -65,6 +66,7 @@ class Game < Gosu::Window
       reset_food
       calculate_score(@bad_snake)
       @bad_snake.grow
+      @obstacles.add_obstacle
     end
 
     @last_move = Time.now
@@ -100,6 +102,7 @@ class Game < Gosu::Window
   end
 
   def snake_collision_with_other_snake?(a_snake, possibly_dead_snake)
+    return true if a_snake.x == possibly_dead_snake.x && a_snake.y == possibly_dead_snake.y
     a_snake.tails.any? { |tail| possibly_dead_snake.x == tail[0] && possibly_dead_snake.y == tail[1] }
   end
 
@@ -115,7 +118,7 @@ class Game < Gosu::Window
   end
 
   def reset_snake
-    @snake = Snake.new(1140, 80, Gosu::Color.rgb(66, 168, 171))
+    @snake = Snake.new(1140, 80, Gosu::Color.rgb(100, 269, 260))
     @speed = START_SPEED
     @last_move = Time.now
   end
@@ -127,6 +130,7 @@ class Game < Gosu::Window
 
   def reset_food
     @food = Food.new(GRID)
+    while @food.wrong_location?(@obstacles, @snake, @bad_snake) do @food = Food.new(GRID) end
   end
 
   def reset_obstacle

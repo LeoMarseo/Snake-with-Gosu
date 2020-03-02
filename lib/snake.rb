@@ -49,19 +49,64 @@ class Snake
     end
   end
 
-  def target(target_x, target_y)
-    if target_x < @x
+  def target(target_x, target_y, obstacles)
+    if target_x < @x && 1200 - @x + target_x >= @x - target_x
       go_down if @direction == "right"
       go_left
-    elsif target_x > @x
+      avoid_obstacles(obstacles, @direction)
+    elsif target_x < @x && 1200 - @x + target_x < @x - target_x
+      go_down if @direction == "right"
+      go_right
+      avoid_obstacles(obstacles, @direction)
+    elsif target_x > @x && @x + 1200 - target_x >= target_x - @x
       go_down if @direction == "left"
       go_right
-    elsif target_y < @y
+      avoid_obstacles(obstacles, @direction)
+    elsif target_x > @x && @x + 1200 - target_x < target_x - @x
+      go_down if @direction == "left"
+      go_left
+      avoid_obstacles(obstacles, @direction)
+    elsif target_y < @y && 800 - @y + target_y <= @y - target_y
+      go_right if @direction == "down"
+      go_down
+      avoid_obstacles(obstacles, @direction)
+    elsif target_y < @y && @y && 800 - @y + target_y > @y - target_y
       go_right if @direction == "down"
       go_up
-    elsif target_y > @y
+      avoid_obstacles(obstacles, @direction)
+    elsif target_y > @y && 800 - target_y + @y <= target_y - @y
+      go_right if @direction == "up"
+      go_up
+      avoid_obstacles(obstacles, @direction)
+    elsif target_y > @y && 800 - target_y + @y > target_y - @y
       go_right if @direction == "up"
       go_down
+      avoid_obstacles(obstacles, @direction)
+    end
+  end
+
+  def avoid_obstacles(obstacles, direction)
+    if direction == "right"
+      go_up if obstacles.all.any? { |obstacle| obstacle.x == @x + SIZE && obstacle.y == @y }
+    elsif direction == "left"
+      go_up if obstacles.all.any? { |obstacle| obstacle.x == @x - SIZE && obstacle.y == @y }
+    elsif direction == "down"
+      go_left if obstacles.all.any? { |obstacle| obstacle.y == @y + SIZE && obstacle.x == @x }
+    elsif direction == "up"
+      go_left if obstacles.all.any? { |obstacle| obstacle.y == @y - SIZE && obstacle.x == @x }
+    end
+  end
+
+  def avoid_tails(tails)
+    case @direction
+    when "right"
+      go_up if tails.any? { |tail| tail[0] == @x + SIZE && tail[1] == @y }
+    when "left"
+      go_up if tails.any? { |tail| tail[0] == @x - SIZE && tail[1] == @y }
+    when "down"
+      go_left if tails.any? { |tail| tail[1] == @y + SIZE && tail[0] == @x }
+    when "up"
+      go_left if tails.any? { |tail| tail[1] == @y - SIZE && tail[0] == @x }
     end
   end
 
